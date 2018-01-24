@@ -40,7 +40,9 @@
         custom:hue="120"
         custom:saturation="1.0"
         custom:value="1.0"
-        custom:ringWidth="50dp"
+        custom:ringWidth="30dp"
+        custom:gapWidth="100dp"
+        custom:handleStrokeColor="#dedede"
 
         android:id="@+id/rcp"
         android:visibility="visible"
@@ -110,7 +112,7 @@
 
     <Button
         android:text="DIALOG"
-        android:visibility="gone"
+        android:visibility="visible"
         android:onClick="showDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

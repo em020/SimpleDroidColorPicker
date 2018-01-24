@@ -173,6 +173,11 @@ public class RingColorPicker extends ColorPicker {
     }
 
     private void moveHandleTo(float angle) {
+        moveHandleTo(angle, true);
+    }
+
+    private void moveHandleTo(float angle, boolean triggerEvent) {
+
         mHue = Utils.normalizeAngle(angle);
         int color = ColorUtils.getColorFromHSV(mHue, mSat, mVal);
 
@@ -182,7 +187,7 @@ public class RingColorPicker extends ColorPicker {
         invalidate();
 
         // fire event
-        if (mOnColorChangedListener != null)
+        if (mOnColorChangedListener != null && triggerEvent)
             mOnColorChangedListener.colorChanged(color);
 
         // set linear pickers if attached
@@ -199,6 +204,14 @@ public class RingColorPicker extends ColorPicker {
     }
 
     private void animateHandleTo(float angle) {
+        animateHandleTo(angle, true, -1);
+    }
+
+    /**
+     * added by edmd.
+     * @param animDura -1 to use default animation duration.
+     */
+    private void animateHandleTo(float angle, final boolean triggerOnChangeListenr, int animDura) {
         float diff = mHue - angle;
 
         // correct angles
@@ -207,10 +220,13 @@ public class RingColorPicker extends ColorPicker {
 
         // start animating
         ValueAnimator anim = ValueAnimator.ofFloat(mHue, mHue - diff);
+        if (animDura >= 0) {
+            anim.setDuration(animDura);
+        }
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                moveHandleTo((float) animation.getAnimatedValue());
+                moveHandleTo((float) animation.getAnimatedValue(), triggerOnChangeListenr);
             }
         });
         anim.start();
@@ -222,11 +238,20 @@ public class RingColorPicker extends ColorPicker {
 
     @Override
     public void setColor(int color) {
+        setColor(color, true, -1);
+    }
+
+
+    /**
+     * added by edmd.
+     * @param animDura -1 to use default animation duration.
+     */
+    public void setColor(int color, boolean triggerOnChangeListener, int animDura) {
         float angle = ColorUtils.getHueFromColor(color);
         mSat = ColorUtils.getSaturationFromColor(color);
         mVal = ColorUtils.getValueFromColor(color);
         mColorPaint.setShader(new SweepGradient(0, 0, ColorUtils.getHueRingColors(7, mSat, mVal), null));
-        animateHandleTo(angle);
+        animateHandleTo(angle, triggerOnChangeListener, animDura);
     }
 
     /**
